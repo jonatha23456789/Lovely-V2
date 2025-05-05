@@ -37,9 +37,9 @@ module.exports = {
       
       api.setMessageReaction("🔴", event.messageID, () => { }, true);
       message.reply({
-        body: `ROI DEMON ✧════•❁❀❁•════✧
+        body: `༺֎𝗟𝗢𝗩𝗘𝗟𝗬 𝗔𝗜֎༻✧════•❁❀❁•════✧
 ${name} ${result}
-✧════•❁❀❁•════✧ VOLDIGO ANOS 🔴`,
+✧════•❁❀❁•════✧༺֎𝗟𝗢𝗩𝗘𝗟𝗬 𝗔𝗜֎༻🔴`,
         mentions: ment,
       }, (err, info) => {
         global.GoatBot.onReply.set(info.messageID, {
