@@ -2,71 +2,52 @@ const axios = require("axios");
 const fs = require("fs-extra");
 const path = require("path");
 
-const config = {
-  name: "pinterest",
-  aliases: ["pin"],
-  version: "1.0",
-  author: "Ayanfe",
-  role: 0,
-  countDown: 10,
-  category: "utility",
-  shortDescription: { en: "Search for images using Unsplash API." },
-  longDescription: { en: "Search for images on Unsplash and display them." },
-  guide: { en: "{pn} [keyword] | [number of images]\n{pn} cats | 5" },
+module.exports = {
+ config: {
+ name: "pinterest", 
+ aliases: ["pin"], 
+ version: "1.0.2", 
+ author: "Team Calyx", 
+ role: 0,
+ countDown: 0,
+ description:"Search for images on Pinterest",
+ category: "𝗠𝗘𝗗𝗜𝗔", 
+ guide: {
+ en: "{prefix}pinterest <search query> -<number of images>"
+ }
+ }, 
+
+ onStart: async function({ api, event, args }) {
+
+ try {
+ const keySearch = args.join(" ");
+ if (!keySearch) {
+ return api.sendMessage(`Please enter the search query and number of images to return in the format: ${config.guide.en}`, event.threadID, event.messageID);
+ }
+ const keySearchs = keySearch.substr(0, keySearch.indexOf('-')).trim() || keySearch;
+ var numberSearch = parseInt(keySearch.split("-").pop().trim()) || 4;
+ 
+
+ const res = await axios.get(`https://pinterest-ashen.vercel.app/api?search=${encodeURIComponent(keySearchs)}`);
+ const data = res.data.data;
+ const imgData = [];
+
+ for (let i = 0; i < Math.min(numberSearch, data.length); i++) {
+ const imgResponse = await axios.get(data[i], { responseType: 'arraybuffer' });
+ const imgPath = path.join(__dirname, 'tmp', `${i + 1}.jpg`);
+ await fs.outputFile(imgPath, imgResponse.data);
+ imgData.push(fs.createReadStream(imgPath));
+ }
+
+ await api.sendMessage({
+ attachment: imgData,
+ body: `Here are the top ${imgData.length} image results for "${keySearchs}":`
+ }, event.threadID, event.messageID);
+
+ await fs.remove(path.join(__dirname, 'tmp'));
+ } catch (error) {
+ console.error(error);
+ return api.sendMessage(`please add to your keysearch - 10 \n ex: -pin cat -10`, event.threadID, event.messageID);
+ }
+ }
 };
-
-const onStart = async ({ api, args, message, event }) => {
-  if (!event.isGroup) return;
-
-  const [searchQuery, numImages = 1] = args.join(" ").split("|").map(item => item.trim());
-
-  if (!searchQuery) {
-    return message.reply("Please enter a keyword\nExample: ;pin funny cats | 5");
-  }
-
-  try {
-    message.reaction("⏳", event.messageID);
-
-    const accessKey = "R6_-bAjOS06I89QrCoZ4zgVLEoLjjA3MdltvKuf2uD0"; 
-    const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(searchQuery)}&per_page=${Math.min(
-      parseInt(numImages),
-      15
-    )}&client_id=${accessKey}`;
-
-    const response = await axios.get(url);
-    const results = response.data.results;
-
-    if (results && results.length > 0) {
-      const downloadFolder = "tmp";
-      const imagePaths = [];
-
-      for (const [index, image] of results.entries()) {
-        const imagePath = path.join(__dirname, downloadFolder, `image_${index + 1}.jpg`);
-        const imageResponse = await axios.get(image.urls.regular, { responseType: "arraybuffer" });
-        await fs.writeFile(imagePath, imageResponse.data);
-        imagePaths.push(imagePath);
-      }
-
-      message.reply(
-        {
-          body: `Here are your images!`,
-          attachment: imagePaths.map(imagePath => fs.createReadStream(imagePath)),
-        },
-        async () => {
-          for (const imagePath of imagePaths) {
-            await fs.unlink(imagePath);
-          }
-        }
-      );
-    } else {
-      message.reply("No images found 🗿");
-    }
-  } catch (error) {
-    console.error(error);
-    message.reply("An error occurred while fetching the images. Please try again later.");
-  } finally {
-    message.reaction("✅", event.messageID);
-  }
-};
-
-module.exports = { config, onStart };
