@@ -28,7 +28,7 @@ const UPoLPrefix = [
       
      const upol = event.body.substring(ahprefix.length).trim();
    if (!upol) {
-        await message.reply('𝗟𝗢𝗩𝗘𝗟𝗬 𝗔𝗜 ✨\n━━━━━━━━━━━━━\nAsk Me Your Question');
+        await message.reply('𝗟𝗢𝗩𝗘𝗟𝗬 𝗔𝗜 ✨\n━━━━━━━━━━━━━\nAsk Me Your Question'━━━━━━━━━━━━━);
         return;
       }
       
