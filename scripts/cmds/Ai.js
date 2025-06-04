@@ -50,7 +50,7 @@ const UPoLPrefix = [
  
      const UPoL = response.data.answer; 
 
-      const upolres = `𝗟𝗢𝗩𝗘𝗟𝗬 𝗔𝗜 ✨\n━━━━━━━━━━━━━\n${UPoL}`;
+      const upolres = `𝗟𝗢𝗩𝗘𝗟𝗬 𝗔𝗜 ✨\n━━━━━━━━━━━━━\n${UPoL}━━━━━━━━━━━━━`;
       
         message.reply(upolres);
   }
