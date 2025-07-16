@@ -78,7 +78,7 @@ const s = async (t, u, v, w, x = false) => {
 
 module.exports = {
   config: {
-    name: 'ai',
+    name: 'chi',
     aliases: [],
     version: '1.0.0',
     author: 'Aryan Chauhan',
